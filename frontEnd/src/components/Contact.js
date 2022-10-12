@@ -12,10 +12,7 @@ const Contact = ({ contact, deleteContact }) => {
         <p>{contact.name}</p>
         <p>{contact.handle}</p>
       </div>
-      <button
-        className="contact-remove"
-        onClick={() => deleteContact(contact.id)}
-      >
+      <button className="contact-remove" onClick={() => deleteContact(contact)}>
         Remove
       </button>
     </li>

@@ -1,56 +1,54 @@
 import "../css/App.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ListContacts from "./ListContacts";
+import AddContact from "./AddContact";
+import * as ContactsAPI from "../utils/ContactsAPI";
+import { Routes, Route, useNavigate } from "react-router-dom";
 const App = () => {
-  const [contacts, setContacts] = useState([
-    {
-      id: "karen",
-      name: "Karen Isgrigg",
-      handle: "karen_isgrigg",
-      avatarURL: "http://localhost:5001/karen.jpg",
-    },
-    {
-      id: "richard",
-      name: "Richard Kalehoff",
-      handle: "richardkalehoff",
-      avatarURL: "http://localhost:5001/richard.jpg",
-    },
-    {
-      id: "tyler",
-      name: "Tyler McGinnis",
-      handle: "tylermcginnis",
-      avatarURL: "http://localhost:5001/tyler.jpg",
-    },
-    {
-      id: "khalid",
-      name: "Khalid Mesbah",
-      handle: "khalid mesbah",
-      avatarURL: "https://via.placeholder.com/60",
-    },
-    {
-      id: "osama",
-      name: "osama Mesbah",
-      handle: "osamamesbah",
-      avatarURL: "https://via.placeholder.com/60",
-    },
-    {
-      id: "mohamed",
-      name: "Mohamed Mesbah",
-      handle: "Mohamedmesbah",
-      avatarURL: "https://via.placeholder.com/60",
-    },
-  ]);
-  const deleteContact = (id) => {
+  const [contacts, setContacts] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    (async () => {
+      const res = await ContactsAPI.getAll();
+      setContacts(res);
+    })();
+  }, []);
+
+  const deleteContact = (contact) => {
+    const { id } = contact;
+    ContactsAPI.remove(contact);
     setContacts(contacts.filter((contact) => contact.id !== id));
   };
+
+  const createContact = (contact) => {
+    (async () => {
+      const res = await ContactsAPI.create(contact);
+      setContacts([...contacts, res]);
+    })();
+    navigate("");
+  };
+
   return (
-    <>
-      <ListContacts
-        contacts={contacts}
-        deleteContact={deleteContact}
-        setContacts={setContacts}
-      />
-    </>
+    <Routes>
+      <Route
+        exact
+        path=""
+        element={
+          <ListContacts
+            contacts={contacts}
+            deleteContact={deleteContact}
+            setContacts={setContacts}
+          />
+        }
+      ></Route>
+      <Route
+        path="create"
+        element={
+          <AddContact contacts={contacts} createContact={createContact} />
+        }
+      ></Route>
+    </Routes>
   );
 };
 
